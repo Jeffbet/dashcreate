@@ -20,7 +20,7 @@
                     <label for="color">Cor do Gráfico:</label>
                     <input type="color" name="color" value="#636efa">
 
-                    <label for="background_color">Cor de Fundo:</label> <!-- Novo seletor de cor de fundo -->
+                    <label for="background_color">Cor de Fundo:</label> 
                     <input type="color" name="background_color" value="#121212">
 
                     <label for="template">Template:</label>
@@ -61,28 +61,28 @@
                 <div class="chart">
                     {{ chart1_html|safe }}
                     <a href="/download/chart1/html" class="btn-export">Exportar Gráfico 1 (HTML)</a>
-                    <a href="/download/chart1/jpg" class="btn-export">Exportar Gráfico 1 (JPG)</a>
+
                 </div>
             {% endif %}
             {% if chart2_html %}
                 <div class="chart">
                     {{ chart2_html|safe }}
                     <a href="/download/chart2/html" class="btn-export">Exportar Gráfico 2 (HTML)</a>
-                    <a href="/download/chart2/jpg" class="btn-export">Exportar Gráfico 2 (JPG)</a>
+
                 </div>
             {% endif %}
             {% if chart3_html %}
                 <div class="chart">
                     {{ chart3_html|safe }}
                     <a href="/download/chart3/html" class="btn-export">Exportar Gráfico 3 (HTML)</a>
-                    <a href="/download/chart3/jpg" class="btn-export">Exportar Gráfico 3 (JPG)</a>
+
                 </div>
             {% endif %}
             {% if chart4_html %}
                 <div class="chart">
                     {{ chart4_html|safe }}
                     <a href="/download/chart4/html" class="btn-export">Exportar Gráfico 4 (HTML)</a>
-                    <a href="/download/chart4/jpg" class="btn-export">Exportar Gráfico 4 (JPG)</a>
+
                 </div>
             {% endif %}
         </div>
