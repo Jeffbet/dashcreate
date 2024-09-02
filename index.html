@@ -7,6 +7,45 @@
     <link rel="stylesheet" href="/static/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Macondo&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Estilos para o modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            padding-top: 60px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <header class="dashboard-header">
@@ -59,46 +98,46 @@
         <div class="dashboard">
             <!-- Renderizar cada gráfico gerado -->
             {% if chart1_html %}
-                <div class="chart">
-                    {{ chart1_html|safe }}
-                    <a href="{{ url_for('download', chart_id='chart_1', file_format='html') }}" class="btn-export">Baixar Gráfico 1 (HTML)</a>
-                </div>
+            <div class="chart">
+                {{ chart1_html|safe }}
+                <a href="{{ url_for('download', filename='chart_1.html') }}" class="btn-export">Baixar Gráfico 1 (HTML)</a>
+            </div>
             {% endif %}
             {% if chart2_html %}
-                <div class="chart">
-                    {{ chart2_html|safe }}
-                    <a href="{{ url_for('download', chart_id='chart_2', file_format='html') }}" class="btn-export">Baixar Gráfico 2 (HTML)</a>
-                </div>
+            <div class="chart">
+                {{ chart2_html|safe }}
+                <a href="{{ url_for('download', filename='chart_2.html') }}" class="btn-export">Baixar Gráfico 2 (HTML)</a>
+            </div>
             {% endif %}
             {% if chart3_html %}
-                <div class="chart">
-                    {{ chart3_html|safe }}
-                    <a href="{{ url_for('download', chart_id='chart_3', file_format='html') }}" class="btn-export">Baixar Gráfico 3 (HTML)</a>
-                </div>
+            <div class="chart">
+                {{ chart3_html|safe }}
+                <a href="{{ url_for('download', filename='chart_3.html') }}" class="btn-export">Baixar Gráfico 3 (HTML)</a>
+            </div>
             {% endif %}
             {% if chart4_html %}
-                <div class="chart">
-                    {{ chart4_html|safe }}
-                    <a href="{{ url_for('download', chart_id='chart_4', file_format='html') }}" class="btn-export">Baixar Gráfico 4 (HTML)</a>
-                </div>
+            <div class="chart">
+                {{ chart4_html|safe }}
+                <a href="{{ url_for('download', filename='chart_4.html') }}" class="btn-export">Baixar Gráfico 4 (HTML)</a>
+            </div>
             {% endif %}
             {% if chart5_html %}
-                <div class="chart">
-                    {{ chart5_html|safe }}
-                    <a href="{{ url_for('download', chart_id='chart_5', file_format='html') }}" class="btn-export">Baixar Gráfico 5 (HTML)</a>
-                </div>
+            <div class="chart">
+                {{ chart5_html|safe }}
+                <a href="{{ url_for('download', filename='chart_5.html') }}" class="btn-export">Baixar Gráfico 5 (HTML)</a>
+            </div>
             {% endif %}
             {% if chart6_html %}
-                <div class="chart">
-                    {{ chart6_html|safe }}
-                    <a href="{{ url_for('download', chart_id='chart_6', file_format='html') }}" class="btn-export">Baixar Gráfico 6 (HTML)</a>
-                </div>
+            <div class="chart">
+                {{ chart6_html|safe }}
+                <a href="{{ url_for('download', filename='chart_6.html') }}" class="btn-export">Baixar Gráfico 6 (HTML)</a>
+            </div>
             {% endif %}
             {% if chart7_html %}
-                <div class="chart">
-                    {{ chart7_html|safe }}
-                    <a href="{{ url_for('download', chart_id='chart_7', file_format='html') }}" class="btn-export">Baixar Gráfico 7 (HTML)</a>
-                </div>
+            <div class="chart">
+                {{ chart7_html|safe }}
+                <a href="{{ url_for('download', filename='chart_7.html') }}" class="btn-export">Baixar Gráfico 7 (HTML)</a>
+            </div>
             {% endif %}
         </div>
         <div class="insights">
@@ -110,5 +149,45 @@
     <footer>
         <p>&copy; 2024 Ferramenta de BI e Dashboards Interativos. Todos os direitos reservados.</p>
     </footer>
+
+    <!-- Modal para exibição de gráficos -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modal-content"></div>
+            <button id="downloadBtn" class="btn-export">Baixar Gráfico</button>
+        </div>
+    </div>
+
+    <script>
+        function openModal(chartId) {
+            document.getElementById('modal').style.display = 'block';
+            const iframe = document.createElement('iframe');
+            iframe.src = "/download/" + chartId + "/html";
+            iframe.style.width = "100%";
+            iframe.style.height = "600px";
+            iframe.style.border = "none";
+
+            const modalContent = document.getElementById('modal-content');
+            modalContent.innerHTML = ''; // Limpa conteúdo anterior
+            modalContent.appendChild(iframe);
+
+            // Configurar botão de download
+            document.getElementById('downloadBtn').onclick = function () {
+                downloadImage(chartId);
+            };
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        function downloadImage(chartId) {
+            const link = document.createElement('a');
+            link.href = "/download/" + chartId + "/html";
+            link.download = chartId + ".html";
+            link.click();
+        }
+    </script>
 </body>
 </html>
