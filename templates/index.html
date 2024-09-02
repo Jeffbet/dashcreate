@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Interativo</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Macondo&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="header-content">
+            <h1>Dashboard Moderno</h1>
+            <p>Visualize insights e estatísticas em tempo real.</p>
+            <div class="buttons">
+                <a href="/" class="btn-home">Voltar para Home</a>
+                <form action="/generate_dashboard" method="POST" enctype="multipart/form-data">
+                    <input type="file" name="file" accept=".csv" required>
+                    <label for="color">Cor do Gráfico:</label>
+                    <input type="color" name="color" value="#636efa">
+
+                    <label for="background_color">Cor de Fundo:</label> <!-- Novo seletor de cor de fundo -->
+                    <input type="color" name="background_color" value="#121212">
+
+                    <label for="template">Template:</label>
+                    <select name="template">
+                        <option value="plotly_dark">Escuro</option>
+                        <option value="plotly_white">Claro</option>
+                        <option value="ggplot2">GGPlot</option>
+                        <option value="seaborn">Seaborn</option>
+                        <option value="simple_white">Simples</option>
+                    </select>
+
+                    {% if columns %}
+                        <label for="x_axis">Eixo X:</label>
+                        <select name="x_axis" required>
+                            {% for column in columns %}
+                                <option value="{{ column }}">{{ column }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <label for="y_axis">Eixo Y:</label>
+                        <select name="y_axis" required>
+                            {% for column in columns %}
+                                <option value="{{ column }}">{{ column }}</option>
+                            {% endfor %}
+                        </select>
+                    {% endif %}
+                    
+                    <button type="submit">Gerar Dashboards</button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <!-- Novo painel para dashboards -->
+    <section class="dashboard-display" style="background-color: {{ background_color }};"> <!-- Ajuste para aplicar a cor de fundo -->
+        <div class="dashboard">
+            {% if chart1_html %}
+                <div class="chart">
+                    {{ chart1_html|safe }}
+                    <a href="/download/chart1/html" class="btn-export">Exportar Gráfico 1 (HTML)</a>
+                    <a href="/download/chart1/jpg" class="btn-export">Exportar Gráfico 1 (JPG)</a>
+                </div>
+            {% endif %}
+            {% if chart2_html %}
+                <div class="chart">
+                    {{ chart2_html|safe }}
+                    <a href="/download/chart2/html" class="btn-export">Exportar Gráfico 2 (HTML)</a>
+                    <a href="/download/chart2/jpg" class="btn-export">Exportar Gráfico 2 (JPG)</a>
+                </div>
+            {% endif %}
+            {% if chart3_html %}
+                <div class="chart">
+                    {{ chart3_html|safe }}
+                    <a href="/download/chart3/html" class="btn-export">Exportar Gráfico 3 (HTML)</a>
+                    <a href="/download/chart3/jpg" class="btn-export">Exportar Gráfico 3 (JPG)</a>
+                </div>
+            {% endif %}
+            {% if chart4_html %}
+                <div class="chart">
+                    {{ chart4_html|safe }}
+                    <a href="/download/chart4/html" class="btn-export">Exportar Gráfico 4 (HTML)</a>
+                    <a href="/download/chart4/jpg" class="btn-export">Exportar Gráfico 4 (JPG)</a>
+                </div>
+            {% endif %}
+        </div>
+        <div class="insights">
+            <h2>Insights dos Dados</h2>
+            <p>Aqui será gerado automaticamente um texto explicativo sobre o dashboard apresentado e sugestões de melhorias.</p>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Ferramenta de BI e Dashboards Interativos. Todos os direitos reservados.</p>
+    </footer>
+</body>
+</html>
