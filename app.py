@@ -8,9 +8,6 @@ import os
 app = Flask(__name__, template_folder='.')
 app.secret_key = 'supersecretkey'
 
-# Diretório onde os arquivos serão salvos temporariamente
-TEMP_DIR = 'static'
-
 @app.route('/')
 def landing_page():
     return render_template('landing.html')
@@ -33,9 +30,16 @@ def generate_dashboard():
         template = request.form.get('template', 'plotly_dark')
         x_axis = request.form.get('x_axis')
         y_axis = request.form.get('y_axis')
+        use_markers = request.form.get('use_markers') == 'yes'
+        filter_column = request.form.get('filter_column')
+        filter_value = request.form.get('filter_value')
 
         # Ler o arquivo CSV enviado
         df = pd.read_csv(file)
+
+        # Aplicar filtro, se selecionado
+        if filter_column and filter_value:
+            df = df[df[filter_column] == filter_value]
 
         # Seleciona colunas padrão se o usuário não selecionar
         if not x_axis or x_axis not in df.columns:
@@ -45,89 +49,53 @@ def generate_dashboard():
 
         # Gerar múltiplos gráficos
         charts = []
-        chart_files = []
         insights = []
 
-        # Função para salvar gráficos
-        def save_chart(chart_html, chart_name):
-            file_path = os.path.join(TEMP_DIR, f"{chart_name}.html")
-            with open(file_path, 'w', encoding='utf-8') as f:
-                f.write(chart_html)
-            return file_path
-
-        # Função para gerar insights simples
-        def generate_insight(df, x_axis, y_axis):
-            if df[y_axis].dtype in ['float64', 'int64']:
-                max_val = df[y_axis].max()
-                min_val = df[y_axis].min()
-                max_date = df[df[y_axis] == max_val][x_axis].values[0]
-                min_date = df[df[y_axis] == min_val][x_axis].values[0]
-                return f"O maior valor de {y_axis} foi {max_val} em {max_date}, e o menor valor foi {min_val} em {min_date}."
-            return "Não há dados numéricos suficientes para gerar insights."
-
-        # Gráfico 1: Colunas/Barras com Filtros
+        # Gráfico 1: Colunas/Barras
         chart_bar = px.bar(df, x=x_axis, y=y_axis, title="Gráfico de Colunas/Barras", color_discrete_sequence=[color])
         chart_bar.update_layout(template=template)
-        chart_bar.update_traces(marker=dict(line=dict(color='rgb(8,48,107)', width=1.5)))
-        chart_html = pio.to_html(chart_bar, full_html=False)
-        charts.append(chart_html)
-        chart_files.append(save_chart(chart_html, "chart_1"))
-        insights.append(generate_insight(df, x_axis, y_axis))
+        charts.append(pio.to_html(chart_bar, full_html=False))
+        insights.append(f"Análise de Colunas/Barras para {x_axis} e {y_axis}: {df[y_axis].describe()}")
 
-        # Gráfico 2: Linhas com Filtros
-        chart_line = px.line(df, x=x_axis, y=y_axis, title="Gráfico de Linhas", color_discrete_sequence=[color])
+        # Gráfico 2: Linhas
+        chart_line = px.line(df, x=x_axis, y=y_axis, title="Gráfico de Linhas", markers=use_markers, color_discrete_sequence=[color])
         chart_line.update_layout(template=template)
-        chart_line.update_traces(mode='lines+markers')
-        chart_html = pio.to_html(chart_line, full_html=False)
-        charts.append(chart_html)
-        chart_files.append(save_chart(chart_html, "chart_2"))
-        insights.append(generate_insight(df, x_axis, y_axis))
+        charts.append(pio.to_html(chart_line, full_html=False))
+        insights.append(f"Análise de Linhas para {x_axis} e {y_axis}: {df[y_axis].describe()}")
 
-        # Gráfico 3: Dispersão com Filtros
+        # Gráfico 3: Dispersão
         chart_scatter = px.scatter(df, x=x_axis, y=y_axis, title="Gráfico de Dispersão", color_discrete_sequence=[color])
         chart_scatter.update_layout(template=template)
-        chart_html = pio.to_html(chart_scatter, full_html=False)
-        charts.append(chart_html)
-        chart_files.append(save_chart(chart_html, "chart_3"))
-        insights.append(generate_insight(df, x_axis, y_axis))
+        charts.append(pio.to_html(chart_scatter, full_html=False))
+        insights.append(f"Análise de Dispersão para {x_axis} e {y_axis}: {df[y_axis].describe()}")
 
-        # Gráfico 4: Área com Filtros
+        # Gráfico 4: Área
         chart_area = px.area(df, x=x_axis, y=y_axis, title="Gráfico de Área", color_discrete_sequence=[color])
         chart_area.update_layout(template=template)
-        chart_html = pio.to_html(chart_area, full_html=False)
-        charts.append(chart_html)
-        chart_files.append(save_chart(chart_html, "chart_4"))
-        insights.append(generate_insight(df, x_axis, y_axis))
+        charts.append(pio.to_html(chart_area, full_html=False))
+        insights.append(f"Análise de Área para {x_axis} e {y_axis}: {df[y_axis].describe()}")
 
-        # Gráfico 5: Sunburst (Circular) com Filtros
-        chart_sunburst = px.sunburst(df, path=[x_axis], values=y_axis, title="Gráfico Circular - Sunburst")
+        # Gráfico 5: Circular
+        chart_sunburst = px.sunburst(df, path=[x_axis], values=y_axis, title="Gráfico Circular")
         chart_sunburst.update_layout(template=template)
-        chart_html = pio.to_html(chart_sunburst, full_html=False)
-        charts.append(chart_html)
-        chart_files.append(save_chart(chart_html, "chart_5"))
-        insights.append("Gráfico Sunburst mostra a hierarquia de dados em um formato circular.")
+        charts.append(pio.to_html(chart_sunburst, full_html=False))
+        insights.append(f"Análise Circular para {x_axis} e {y_axis}: {df[y_axis].describe()}")
 
-        # Gráfico 6: Histograma com Filtros
+        # Gráfico 6: Histograma
         chart_histogram = px.histogram(df, x=x_axis, y=y_axis, title="Histograma", color_discrete_sequence=[color])
         chart_histogram.update_layout(template=template)
-        chart_html = pio.to_html(chart_histogram, full_html=False)
-        charts.append(chart_html)
-        chart_files.append(save_chart(chart_html, "chart_6"))
-        insights.append(generate_insight(df, x_axis, y_axis))
+        charts.append(pio.to_html(chart_histogram, full_html=False))
+        insights.append(f"Análise de Histograma para {x_axis} e {y_axis}: {df[y_axis].describe()}")
 
-        # Gráfico 7: Gráfico 3D de Superfície com Filtros
+        # Gráfico 7: Gráfico 3D de Superfície
         if len(df.select_dtypes(include=['float64', 'int64']).columns) >= 3:
             z_axis = df.select_dtypes(include=['float64', 'int64']).columns[2]
             chart_3d = px.scatter_3d(df, x=x_axis, y=y_axis, z=z_axis, title="Gráfico 3D de Superfície", color_discrete_sequence=[color])
             chart_3d.update_layout(template=template)
-            chart_html = pio.to_html(chart_3d, full_html=False)
-            charts.append(chart_html)
-            chart_files.append(save_chart(chart_html, "chart_7"))
-            insights.append("Gráfico 3D de superfície mostra a relação entre três variáveis numéricas.")
+            charts.append(pio.to_html(chart_3d, full_html=False))
+            insights.append(f"Análise de Superfície 3D para {x_axis}, {y_axis}, e {z_axis}: {df[z_axis].describe()}")
         else:
             charts.append("<p>Dados insuficientes para gerar o gráfico 3D.</p>")
-            chart_files.append("")
-            insights.append("Dados insuficientes para gerar o gráfico 3D.")
 
         # Renderiza os gráficos e a cor de fundo selecionada
         return render_template('index.html',
@@ -138,10 +106,9 @@ def generate_dashboard():
                                chart5_html=charts[4] if len(charts) > 4 else None,
                                chart6_html=charts[5] if len(charts) > 5 else None,
                                chart7_html=charts[6] if len(charts) > 6 else None,
-                               chart_files=chart_files,
                                insights=insights,
                                columns=list(df.columns),
-                               background_color=background_color)  # Passa a cor de fundo para o template
+                               background_color=background_color)
 
     except Exception as e:
         flash(f"Ocorreu um erro ao gerar o dashboard: {e}", "danger")
@@ -150,18 +117,11 @@ def generate_dashboard():
 @app.route('/download/<filename>')
 def download(filename):
     try:
-        # Caminho do arquivo no diretório estático
-        file_path = os.path.join(TEMP_DIR, filename)
-        if os.path.exists(file_path):
-            return send_file(file_path, as_attachment=True)
-        else:
-            flash(f"Arquivo não encontrado: {filename}", "danger")
-            return redirect(url_for('index'))
+        file_path = os.path.join('static', filename)
+        return send_file(file_path, as_attachment=True)
     except Exception as e:
         flash(f"Erro ao baixar o arquivo: {e}", "danger")
         return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    # Certifique-se de que o diretório estático exista
-    os.makedirs(TEMP_DIR, exist_ok=True)
     app.run(debug=True)
