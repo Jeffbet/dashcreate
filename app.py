@@ -26,7 +26,7 @@ def generate_dashboard():
 
         # Configurações dos gráficos
         color = request.form.get('color', '#636efa')
-        background_color = request.form.get('background_color', '#121212')  # Cor de fundo
+        background_color = request.form.get('background_color', '#121212')  
         template = request.form.get('template', 'plotly_dark')
         x_axis = request.form.get('x_axis')
         y_axis = request.form.get('y_axis')
