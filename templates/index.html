@@ -1,176 +1,285 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard Interativo</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Macondo&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <!-- CSS principal -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+
+    <!-- Google Fonts e FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Macondo&display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+
     <style>
+        /* Flash messages, modal e ajustes menores */
+        .flash-container {
+            margin: 140px auto 0;
+            max-width: 800px;
+            text-align: center;
+        }
+        .flash-message {
+            background-color: #e74c3c;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
         .modal {
             display: none;
             position: fixed;
             z-index: 1000;
             padding-top: 60px;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
+            left: 0; top: 0; width: 100%; height: 100%;
             overflow: auto;
             background-color: rgba(0, 0, 0, 0.8);
         }
-
         .modal-content {
             background-color: #fefefe;
-            margin: auto;
-            padding: 20px;
+            margin: auto; padding: 20px;
             border: 1px solid #888;
-            width: 80%;
-            max-width: 900px;
+            width: 80%; max-width: 900px;
             text-align: center;
         }
-
         .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
+            color: #aaa; float: right; font-size: 28px; font-weight: bold;
+        }
+        .close:hover, .close:focus {
+            color: black; text-decoration: none; cursor: pointer;
         }
 
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
+        /* Forçar o formulário no cabeçalho a quebrar em linhas */
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .buttons form,
+        .buttons a {
+            margin: 5px;
+        }
+        /* Inputs e selects menores para não estourar a tela */
+        .buttons input[type="color"],
+        .buttons select,
+        .buttons input[type="text"],
+        .buttons label {
+            font-size: 0.9em;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        /* Tornar o botão “Gerar Dashboards” menor em telas pequenas */
+        @media (max-width: 600px) {
+            .buttons button {
+                padding: 6px 12px;
+                font-size: 0.9em;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Navbar compartilhada -->
+    <div class="navbar">
+        <div class="nav-left">
+            <a href="{{ url_for('landing_page') }}">Home</a>
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        </div>
+        <div class="nav-right">
+            <div class="dropdown">
+                <button class="dropbtn">Funcionalidades 
+                    <i class="fa fa-caret-down"></i>
+                </button>
+                <div class="dropdown-content">
+                    <a href="#">Importar CSV</a>
+                    <a href="#">Gerar Dashboards</a>
+                    <a href="#">Exportar PBIX</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flash messages -->
+    <div class="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, msg in messages %}
+                    <div class="flash-message">{{ msg }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Header / formulário (fixo) -->
     <header class="dashboard-header">
         <div class="header-content">
             <h1>Dashboard Moderno</h1>
             <p>Visualize insights e estatísticas em tempo real.</p>
+
             <div class="buttons">
-                <a href="/" class="btn-home">Voltar para Home</a>
-                <form action="/generate_dashboard" method="POST" enctype="multipart/form-data">
-                    <input type="file" name="file" accept=".csv" required>
-                    <label for="color">Cor do Gráfico:</label>
-                    <input type="color" name="color" value="#636efa">
+                <!-- Botão para reiniciar -->
+                <a href="{{ url_for('dashboard') }}" class="btn-home">
+                    <i class="fas fa-redo-alt"></i> Carregar Novo CSV
+                </a>
 
-                    <label for="background_color">Cor de Fundo:</label> 
-                    <input type="color" name="background_color" value="#121212">
+                {% if state == 1 %}
+                    <!-- Estado 1: apenas upload -->
+                    <form action="{{ url_for('dashboard') }}" method="POST" enctype="multipart/form-data">
+                        <input type="file" name="file" accept=".csv" required />
+                        <button type="submit">Carregar CSV</button>
+                    </form>
 
-                    <label for="template">Template:</label>
-                    <select name="template">
-                        <option value="plotly_dark">Escuro</option>
-                        <option value="plotly_white">Claro</option>
-                        <option value="ggplot2">GGPlot</option>
-                        <option value="seaborn">Seaborn</option>
-                        <option value="simple_white">Simples</option>
-                    </select>
+                {% else %}
+                    <!-- Estado 2 ou 3: formulário completo -->
+                    <form action="{{ url_for('generate_dashboard') }}" method="POST">
+                        <input type="hidden" name="data_uid" value="{{ data_uid }}" />
 
-                    {% if columns %}
+                        <!-- Cor do Gráfico -->
+                        <label for="color">Cor do Gráfico:</label>
+                        <input type="color" name="color" value="{{ request.form.get('color', '#636efa') }}" />
+
+                        <!-- Cor de Fundo -->
+                        <label for="background_color">Cor de Fundo:</label>
+                        <input type="color" name="background_color" value="{{ background_color }}" />
+
+                        <!-- Template -->
+                        <label for="selected_template">Template:</label>
+                        <select name="selected_template">
+                            <option value="plotly_dark" {% if selected_template=='plotly_dark' %}selected{% endif %}>Escuro</option>
+                            <option value="plotly_white" {% if selected_template=='plotly_white' %}selected{% endif %}>Claro</option>
+                            <option value="ggplot2" {% if selected_template=='ggplot2' %}selected{% endif %}>GGPlot</option>
+                            <option value="seaborn" {% if selected_template=='seaborn' %}selected{% endif %}>Seaborn</option>
+                            <option value="simple_white" {% if selected_template=='simple_white' %}selected{% endif %}>Simples</option>
+                        </select>
+
+                        <!-- Eixo X -->
                         <label for="x_axis">Eixo X:</label>
                         <select name="x_axis" required>
-                            {% for column in columns %}
-                                <option value="{{ column }}">{{ column }}</option>
+                            {% for col in columns %}
+                                <option value="{{ col }}" {% if x_axis == col %}selected{% endif %}>{{ col }}</option>
                             {% endfor %}
                         </select>
 
-                        <label for="y_axis">Eixo Y:</label>
-                        <select name="y_axis" required>
-                            {% for column in columns %}
-                                <option value="{{ column }}">{{ column }}</option>
+                        <!-- Eixo Y (múltiplo) COMO DROPDOWN -->
+                        <label for="y_axis">Eixo Y (múltiplo):</label>
+                        <select name="y_axis" multiple required>
+                            {% for col in numeric_cols %}
+                                <option value="{{ col }}" {% if col in y_axes %}selected{% endif %}>{{ col }}</option>
                             {% endfor %}
                         </select>
 
-                        <!-- Opção para usar ou não marcadores no gráfico -->
-                        <label for="use_markers">Usar Marcadores:</label>
-                        <input type="checkbox" name="use_markers" value="yes" checked>
+                        <!-- Marcadores -->
+                        <label for="use_markers">Marcadores (Linhas):</label>
+                        <input type="checkbox" name="use_markers" value="yes" {% if request.form.get('use_markers')=='yes' or state==2 %}checked{% endif %} />
 
-                        <!-- Selecionar um filtro adicional -->
-                        <label for="filter_column">Filtro de Coluna:</label>
-                        <select name="filter_column">
+                        <!-- Filtro 1 -->
+                        <label for="filter_column1">Filtro 1 Coluna:</label>
+                        <select name="filter_column1" id="filter_column1">
                             <option value="">Nenhum</option>
-                            {% for column in columns %}
-                                <option value="{{ column }}">{{ column }}</option>
+                            {% for col in columns %}
+                                <option value="{{ col }}" {% if filter_column1 == col %}selected{% endif %}>{{ col }}</option>
                             {% endfor %}
                         </select>
+                        <label for="filter_value1">Valor 1:</label>
+                        <select name="filter_value1" id="filter_value1">
+                            <option value="">--</option>
+                            {% if filter_column1 %}
+                                {% for val in unique_values[filter_column1] %}
+                                    <option value="{{ val }}" {% if filter_value1 == val %}selected{% endif %}>{{ val }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
 
-                        <!-- Selecionar o valor do filtro -->
-                        <label for="filter_value">Valor do Filtro:</label>
-                        <input type="text" name="filter_value" placeholder="Digite o valor do filtro">
+                        <!-- Filtro 2 -->
+                        <label for="filter_column2">Filtro 2 Coluna:</label>
+                        <select name="filter_column2" id="filter_column2">
+                            <option value="">Nenhum</option>
+                            {% for col in columns %}
+                                <option value="{{ col }}" {% if filter_column2 == col %}selected{% endif %}>{{ col }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="filter_value2">Valor 2:</label>
+                        <select name="filter_value2" id="filter_value2">
+                            <option value="">--</option>
+                            {% if filter_column2 %}
+                                {% for val in unique_values[filter_column2] %}
+                                    <option value="{{ val }}" {% if filter_value2 == val %}selected{% endif %}>{{ val }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
 
-                    {% endif %}
-                    
-                    <button type="submit">Gerar Dashboards</button>
-                </form>
+                        <!-- Botão gerar dashboards -->
+                        <button type="submit">Gerar Dashboards</button>
+                    </form>
+                {% endif %}
             </div>
         </div>
     </header>
 
-    <!-- Novo painel para dashboards -->
-    <section class="dashboard-display" style="background-color: {{ background_color }};">
-        <div class="dashboard">
-            <!-- Renderizar cada gráfico gerado -->
-            {% if chart1_html %}
-            <div class="chart">
-                {{ chart1_html|safe }}
-                <a href="{{ url_for('download', filename='chart_1.html') }}" class="btn-export">Baixar Gráfico 1 (HTML)</a>
+    <!-- Seção principal: botões de download e gráficos -->
+    <section class="dashboard-display" style="background-color: {{ background_color if state>=2 else '#121212' }};">
+        {% if state == 3 %}
+            <div class="data-downloads">
+                {% if data_csv_url %}
+                    <a href="{{ data_csv_url }}"><i class="fas fa-file-csv"></i> Baixar CSV Filtrado</a>
+                {% endif %}
+                {% if data_xlsx_url %}
+                    <a href="{{ data_xlsx_url }}"><i class="fas fa-file-excel"></i> Baixar XLSX Filtrado</a>
+                {% endif %}
+                <a href="javascript:void(0);" class="disabled"><i class="fas fa-download"></i> Baixar PBIX (Em breve)</a>
             </div>
-            {% endif %}
-            {% if chart2_html %}
-            <div class="chart">
-                {{ chart2_html|safe }}
-                <a href="{{ url_for('download', filename='chart_2.html') }}" class="btn-export">Baixar Gráfico 2 (HTML)</a>
-            </div>
-            {% endif %}
-            {% if chart3_html %}
-            <div class="chart">
-                {{ chart3_html|safe }}
-                <a href="{{ url_for('download', filename='chart_3.html') }}" class="btn-export">Baixar Gráfico 3 (HTML)</a>
-            </div>
-            {% endif %}
-            {% if chart4_html %}
-            <div class="chart">
-                {{ chart4_html|safe }}
-                <a href="{{ url_for('download', filename='chart_4.html') }}" class="btn-export">Baixar Gráfico 4 (HTML)</a>
-            </div>
-            {% endif %}
-            {% if chart5_html %}
-            <div class="chart">
-                {{ chart5_html|safe }}
-                <a href="{{ url_for('download', filename='chart_5.html') }}" class="btn-export">Baixar Gráfico 5 (HTML)</a>
-            </div>
-            {% endif %}
-            {% if chart6_html %}
-            <div class="chart">
-                {{ chart6_html|safe }}
-                <a href="{{ url_for('download', filename='chart_6.html') }}" class="btn-export">Baixar Gráfico 6 (HTML)</a>
-            </div>
-            {% endif %}
-            {% if chart7_html %}
-            <div class="chart">
-                {{ chart7_html|safe }}
-                <a href="{{ url_for('download', filename='chart_7.html') }}" class="btn-export">Baixar Gráfico 7 (HTML)</a>
-            </div>
-            {% endif %}
-        </div>
-        <div class="insights">
-            <h2>Insights dos Dados</h2>
-            {% if insights %}
+
+            {% for chart in charts %}
+                <div class="chart">
+                    {{ chart.html|safe }}
+                    {% if chart.url %}
+                        <a href="{{ chart.url }}" class="btn-export" download><i class="fas fa-chart-bar"></i> Baixar Gráfico {{ loop.index }}</a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <div class="insights">
+                <h2>Insights dos Dados</h2>
                 {% for insight in insights %}
                     <p>{{ insight }}</p>
                 {% endfor %}
-            {% else %}
-                <p>Aqui será gerado automaticamente um texto explicativo sobre o dashboard apresentado e sugestões de melhorias.</p>
-            {% endif %}
-        </div>
+            </div>
+        {% endif %}
     </section>
 
     <footer>
         <p>&copy; 2024 Ferramenta de BI e Dashboards Interativos. Todos os direitos reservados.</p>
     </footer>
+
+    <!-- Script para popular dinamicamente os <select> dos “Valores de Filtro” -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Converter unique_values Python para objeto JS
+            const uniqueValues = {{ unique_values|tojson }};
+
+            function populateFilterValues(columnSelectId, valueSelectId) {
+                const colSelect = document.getElementById(columnSelectId);
+                const valSelect = document.getElementById(valueSelectId);
+
+                colSelect.addEventListener("change", function() {
+                    const chosenCol = colSelect.value;
+                    // Limpar opções
+                    valSelect.innerHTML = "<option value=''>--</option>";
+                    if (!chosenCol || !(chosenCol in uniqueValues)) {
+                        return;
+                    }
+                    uniqueValues[chosenCol].forEach(function(v) {
+                        const opt = document.createElement("option");
+                        opt.value = v;
+                        opt.text = v;
+                        valSelect.appendChild(opt);
+                    });
+                });
+            }
+
+            populateFilterValues("filter_column1", "filter_value1");
+            populateFilterValues("filter_column2", "filter_value2");
+        });
+    </script>
 </body>
 </html>
