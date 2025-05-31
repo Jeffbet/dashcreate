@@ -1,3 +1,6 @@
+/* --------------------------------------------
+   Fonte e cores gerais
+-------------------------------------------- */
 body {
     font-family: 'Macondo', cursive;
     background-color: #121212;
@@ -6,199 +9,86 @@ body {
     padding: 0;
 }
 
-.landing-header {
-    background-color: #1E1E1E;
-    padding: 50px 20px;
-    text-align: center;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.header-content h1 {
-    font-size: 4em;
-    margin-bottom: 10px;
-    color: #00FF7F;
-    animation: fadeInDown 1.5s ease;
-}
-
-.header-content p {
-    font-size: 1.5em;
-    margin-bottom: 20px;
-    animation: fadeInUp 1.5s ease;
-}
-
-.cta-button {
-    display: inline-block;
-    background-color: #00FF7F;
-    color: #121212;
-    padding: 15px 30px;
-    border-radius: 20px;
-    text-decoration: none;
-    font-size: 1.2em;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    margin-top: 20px;
-}
-
-.cta-button:hover {
-    background-color: #00CC66;
-    transform: scale(1.05);
-}
-
-.features h2 {
-    font-size: 3em;
-    text-align: center;
-    margin: 50px 0 20px;
-    color: #00FF7F;
-}
-
-.feature-list {
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin-bottom: 40px;
-}
-
-.feature-item {
-    text-align: center;
-    margin: 20px;
-    max-width: 200px;
-    transition: transform 0.3s ease;
-    border-radius: 10px;
-    padding: 10px;
-    background-color: #1E1E1E;
-}
-
-.feature-item:hover {
-    transform: scale(1.05);
-    background-color: #2E2E2E;
-}
-
-.feature-item i {
-    color: #00FF7F;
-    margin-bottom: 10px;
-}
-
-.carousel {
-    text-align: center;
-    padding: 20px;
-}
-
-.carousel h2 {
-    font-size: 2.5em;
-    margin-bottom: 20px;
-    color: #00FF7F;
-}
-
-.carousel-container {
-    position: relative;
-    width: 60%;
-    margin: 0 auto;
-    overflow: hidden;
-    border-radius: 20px;
-    display: flex;
-    justify-content: center;
-}
-
-.carousel-slide {
-    min-width: 80%;
-    transition: transform 0.5s ease-in-out;
-}
-
-.carousel-slide img {
-    border-radius: 10px;
-    width: 100%;
-}
-
-.carousel-slide p {
-    margin-top: 10px;
-    font-size: 1.2em;
-}
-
-.scroll-down {
-    text-align: center;
-    margin-top: 30px;
-    color: #00FF7F;
-}
-
-.scroll-down i {
-    font-size: 2em;
-    animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0);
-    }
-    40% {
-        transform: translateY(-10px);
-    }
-    60% {
-        transform: translateY(-5px);
-    }
-}
-
+/* --------------------------------------------
+   Navbar (landing + dashboard)
+   Visual mais profissional
+-------------------------------------------- */
 .navbar {
-    overflow: hidden;
-    background-color: #1E1E1E;
-    font-family: 'Macondo', cursive;
-    border-radius: 10px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1E1E1E;
+    padding: 10px 40px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar .nav-left {
+    display: flex;
+    align-items: center;
     gap: 20px;
 }
 
-.navbar a {
-    font-size: 18px;
+.navbar .nav-left a {
+    font-size: 20px;
     color: #E0E0E0;
-    text-align: center;
-    padding: 14px 20px;
     text-decoration: none;
-    transition: background-color 0.3s ease;
-    border-radius: 10px;
+    padding: 8px 16px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    border-radius: 8px;
 }
 
-.navbar a:hover {
+.navbar .nav-left a:hover {
     background-color: #00FF7F;
     color: #121212;
 }
 
-.dropdown .dropbtn {
+.navbar .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.navbar .nav-right .dropbtn {
     font-size: 18px;
-    border: none;
-    outline: none;
     color: #E0E0E0;
-    padding: 14px 20px;
-    background-color: inherit;
-    font-family: inherit;
-    margin: 0;
-    transition: background-color 0.3s ease;
-    border-radius: 10px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px 16px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    border-radius: 8px;
+}
+
+.navbar .nav-right .dropbtn:hover {
+    background-color: #00FF7F;
+    color: #121212;
+}
+
+.dropdown {
+    position: relative;
 }
 
 .dropdown-content {
     display: none;
     position: absolute;
     background-color: #2E2E2E;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-    transition: display 0.3s ease;
-    border-radius: 10px;
+    min-width: 180px;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.3);
+    z-index: 1001;
+    border-radius: 8px;
 }
 
 .dropdown-content a {
-    float: none;
     color: #E0E0E0;
     padding: 12px 16px;
     text-decoration: none;
     display: block;
-    text-align: left;
+    font-size: 16px;
     transition: background-color 0.3s ease;
-    border-radius: 10px;
+    border-radius: 8px;
 }
 
 .dropdown-content a:hover {
@@ -210,28 +100,83 @@ body {
     display: block;
 }
 
-footer {
+/* --------------------------------------------
+   Landing Page
+-------------------------------------------- */
+.landing-header {
     background-color: #1E1E1E;
-    color: #E0E0E0;
-    padding: 20px;
+    padding: 100px 20px;
     text-align: center;
-    border-radius: 10px;
+    border-radius: 8px;
+    margin: 40px auto 60px auto;
+    max-width: 900px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.header-content h1 {
+    font-size: 4em;
+    margin-bottom: 20px;
+    color: #00FF7F;
+    letter-spacing: 2px;
+    animation: fadeInDown 1.5s ease;
+}
+
+.header-content p {
+    font-size: 1.5em;
+    margin-bottom: 30px;
+    color: #DDDDDD;
+    animation: fadeInUp 1.5s ease;
+}
+
+.cta-button {
+    display: inline-block;
+    background-color: #00FF7F;
+    color: #121212;
+    padding: 15px 35px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-size: 1.3em;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin-top: 30px;
+}
+
+.cta-button:hover {
+    background-color: #00CC66;
+    transform: scale(1.05);
+}
+
+/* --------------------------------------------
+   Sessão de funcionalidades (landing)
+-------------------------------------------- */
+.features {
+    padding: 60px 20px 40px;
+    max-width: 1000px;
+    margin: 0 auto 60px auto;
+}
+
+.features h2 {
+    font-size: 3em;
+    text-align: center;
+    margin-bottom: 40px;
+    color: #00FF7F;
 }
 
 .feature-list {
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
+    gap: 30px;
 }
 
 .feature-item {
     text-align: center;
-    margin: 20px;
     max-width: 200px;
     transition: transform 0.3s ease;
-    border-radius: 10px;
-    padding: 10px;
+    border-radius: 12px;
+    padding: 20px;
     background-color: #1E1E1E;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .feature-item:hover {
@@ -241,28 +186,286 @@ footer {
 
 .feature-item i {
     color: #00FF7F;
+    margin-bottom: 12px;
+    font-size: 36px;
+}
+
+.feature-item h3 {
+    font-size: 1.2em;
     margin-bottom: 10px;
 }
 
-.scroll-down {
+.feature-item p {
+    font-size: 0.9em;
+    color: #CCCCCC;
+}
+
+/* --------------------------------------------
+   Footer
+-------------------------------------------- */
+footer {
+    background-color: #1E1E1E;
+    color: #E0E0E0;
+    padding: 20px;
+    text-align: center;
+    border-radius: 8px;
+    margin-top: 60px;
+}
+
+/* --------------------------------------------
+   Dashboard/Formulário (sempre fixo no topo)
+-------------------------------------------- */
+.dashboard-header {
+    background-color: #1E1E1E;
+    padding: 30px 40px;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    animation: fadeInDown 0.8s ease;
+}
+
+.dashboard-header .header-content h1 {
+    font-size: 2.8em;
+    margin-bottom: 10px;
+    color: #00FF7F;
+    letter-spacing: 1px;
+}
+
+.dashboard-header .header-content p {
+    font-size: 1.1em;
+    margin-bottom: 20px;
+    color: #DDDDDD;
+}
+
+/* Botões e formulário no cabeçalho */
+.buttons {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;           /* Permite quebrar em várias linhas */
+    justify-content: center;
+    gap: 10px;
+}
+
+.buttons form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+}
+
+.buttons a.btn-home {
+    background-color: #00FF7F;
+    color: #121212;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.buttons a.btn-home:hover {
+    background-color: #00CC66;
+    transform: scale(1.03);
+}
+
+.buttons input[type="file"] {
+    background-color: #2E2E2E;
+    color: #E0E0E0;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.buttons label {
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: 0.9em;
+}
+
+.buttons input[type="color"],
+.buttons select,
+.buttons input[type="text"] {
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    background-color: #2E2E2E;
+    color: #E0E0E0;
+    min-width: 100px;
+}
+
+.buttons select[multiple] {
+    min-width: 120px;
+    background-color: #2E2E2E;
+    color: #E0E0E0;
+}
+
+/* Ajuste do painel principal para não ficar atrás do header fixo */
+.dashboard-display {
+    padding-top: 420px;  /* espaçamento para o header mais alto */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+/* Botões de download (dados e gráficos) */
+.data-downloads {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.data-downloads a {
+    background-color: #FF8C00; /* laranja para destacar */
+    color: #121212;
+    padding: 10px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 1.1em;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.data-downloads a:hover {
+    background-color: #e67e00;
+    transform: scale(1.05);
+}
+
+.data-downloads a.disabled {
+    background-color: #555555;
+    cursor: not-allowed;
+    transform: none;
+    opacity: 0.7;
+}
+
+/* Cada gráfico dentro de um bloco estilizado */
+.chart {
+    width: 100%;
+    max-width: 1000px;
+    margin-bottom: 30px;
+    background-color: #1E1E1E;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.btn-export {
+    background-color: #00FF7F;
+    color: #121212;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-top: 10px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-export:hover {
+    background-color: #00CC66;
+    transform: scale(1.05);
+}
+
+/* Insights */
+.insights {
     text-align: center;
     margin-top: 30px;
+    width: 100%;
+    max-width: 1000px;
+}
+
+.insights h2 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
     color: #00FF7F;
+    letter-spacing: 1px;
 }
 
-.scroll-down i {
-    font-size: 2em;
-    animation: bounce 2s infinite;
+.insights p {
+    font-size: 1.1em;
+    color: #E0E0E0;
+    padding: 15px;
+    background-color: #2E2E2E;
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5);
+    margin-bottom: 10px;
 }
 
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0);
+/* --------------------------------------------
+   Responsividade geral
+-------------------------------------------- */
+@media (max-width: 768px) {
+    .dashboard-header {
+        padding: 25px 20px;
     }
-    40% {
-        transform: translateY(-10px);
+    .dashboard-header .header-content h1 {
+        font-size: 2.2em;
     }
-    60% {
-        transform: translateY(-5px);
+    .dashboard-header .header-content p {
+        font-size: 1em;
     }
+    .buttons {
+        gap: 8px;
+    }
+    .buttons input[type="color"],
+    .buttons select,
+    .buttons input[type="text"] {
+        margin-right: 5px;
+        padding: 5px 8px;
+        font-size: 0.85em;
+        min-width: 80px;
+    }
+    .buttons select[multiple] {
+        min-width: 90px;
+    }
+    .buttons button, .buttons .btn-home {
+        padding: 6px 12px;
+        font-size: 0.9em;
+    }
+    .dashboard-display {
+        padding-top: 360px;
+    }
+    .chart {
+        max-width: 90%;
+        padding: 12px;
+    }
+    .insights h2 {
+        font-size: 2em;
+    }
+    .insights p {
+        font-size: 1em;
+    }
+    .btn-export, .data-downloads a {
+        padding: 8px 16px;
+        font-size: 0.9em;
+    }
+}
+
+/* Animações */
+@keyframes fadeInDown {
+    0% { opacity: 0; transform: translateY(-30px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
