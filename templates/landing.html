@@ -1,37 +1,44 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ferramenta de BI e Dashboards Interativos</title>
-    <link rel="stylesheet" href="static/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Macondo&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <link href="https://fonts.googleapis.com/css2?family=Macondo&display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
 </head>
 <body>
+    <!-- Navbar compartilhada -->
     <div class="navbar">
-        <a href="/">Home</a>
-        <a href="/dashboard">Dashboard</a>
-        <div class="dropdown">
-            <button class="dropbtn">Funcionalidades 
-                <i class="fa fa-caret-down"></i>
-            </button>
-            <div class="dropdown-content">
-                <a href="#">Importar CSV</a>
-                <a href="#">Gerar Dashboards</a>
-                <a href="#">Exportar PBIX</a>
+        <div class="nav-left">
+            <a href="{{ url_for('landing_page') }}">Home</a>
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        </div>
+        <div class="nav-right">
+            <div class="dropdown">
+                <button class="dropbtn">Funcionalidades 
+                    <i class="fa fa-caret-down"></i>
+                </button>
+                <div class="dropdown-content">
+                    <a href="#">Importar CSV</a>
+                    <a href="#">Gerar Dashboards</a>
+                    <a href="#">Exportar PBIX</a>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Seção principal de boas-vindas -->
     <header class="landing-header">
         <div class="header-content">
             <h1>Bem-vindo à Ferramenta de BI</h1>
             <p>Transforme seus dados em insights poderosos com dashboards interativos.</p>
-            <a href="/dashboard" class="cta-button">Experimente Gratuitamente</a>
+            <a href="{{ url_for('dashboard') }}" class="cta-button">Experimente Gratuitamente</a>
         </div>
     </header>
 
+    <!-- Funcionalidades principais -->
     <section class="features">
         <h2>Funcionalidades Principais</h2>
         <div class="feature-list">
